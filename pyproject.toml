@@ -1,0 +1,9 @@
+[tool.poetry]
+name = "insane-snake-python"
+version = "42.0.0"
+description = "A insane Battlesnake written in Python"
+authors = ["Mitchell Nursey <mitchnursey@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+cherrypy = "^18.6"
