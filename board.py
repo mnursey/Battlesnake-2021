@@ -40,9 +40,9 @@ class Board:
     def isBlocked(self, x, y):
 
         if self.grid[x][y] in self.blocked_values:
-            return False
+            return True
 
-        return True
+        return False
 
     def neighbours(self, x, y):
 
@@ -50,12 +50,12 @@ class Board:
 
         if x - 1 >= 0:
             output.append({"x": x-1,"y" : y})
-        if x + 1 < width:
+        if x + 1 < self.width:
             output.append({"x": x+1,"y" : y})
 
         if y - 1 >= 0:
             output.append({"x": x,"y" : y-1})
-        if y + 1 < width:
+        if y + 1 < self.width:
             output.append({"x": x,"y" : y+1})
 
         return output

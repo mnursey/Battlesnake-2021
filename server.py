@@ -49,6 +49,8 @@ class Battlesnake(object):
         b = board.Board(data)
         b.print()
 
+        f = floodfill_pathfinding.Floodfill(b, data["you"]["body"][0])
+        f.print()
 
         # Choose a random direction to move in
         possible_moves = ["up", "down", "left", "right"]

@@ -2,7 +2,7 @@ import board
 
 class Floodfill:
 
-    fontier = []
+    frontier = []
     grid = None
     board = None
 
@@ -11,8 +11,10 @@ class Floodfill:
         self.board = game_board
         self.grid = [[None for i in range(self.board.width)] for j in range(self.board.width)]
 
-        self.frontier_add(self.create_node(start_cord["x"], start_cord["y"], False, None))
-
+        start_node = self.create_node(start_cord["x"], start_cord["y"], False, None)
+        self.frontier_add(start_node)
+        self.grid[start_cord['x']][start_cord['y']] = start_node
+        
         self.solve()
 
         return
@@ -20,24 +22,59 @@ class Floodfill:
     def solve(self):
 
         while len(self.frontier) > 0:
-            current = self.fontier_pop()
+            current = self.frontier_pop()
 
-            for n in self.board.neighbours():
-                if self.grid[n['x']][n['y']] == None:
-                    unseen_node = self.create_node(n['x'], n['y'], self.board.isBlocked(n['x'], n['y']), current)
-                    self.fontier_add(unseen_node)
+            if not current["blocked"]:
+                for n in self.board.neighbours(current["x"], current["y"]):
+                    # Add to frontier if we haven't seen it
+                    if self.grid[n['x']][n['y']] == None:
+                        unseen_node = self.create_node(n['x'], n['y'], self.board.isBlocked(n['x'], n['y']), current)
+                        self.grid[n['x']][n['y']] = unseen_node
+                        self.frontier_add(unseen_node)
 
         return
 
-    def fontier_add(self, node):
+    def frontier_add(self, node):
         self.frontier.append(node)
 
         return
 
-    def fontier_pop(self):
+    def frontier_pop(self):
 
-        return
+        return self.frontier.pop(0)
 
     def create_node(self, x, y, blocked, prev):
 
         return {"x" : x, "y" : y, "blocked" : blocked, "from" : prev}
+
+    def print(self):
+
+        output = "Grid:\n"
+        for y in range(self.board.width):
+            line = "\n"
+            for x in range(self.board.width):
+                node = self.grid[x][self.board.width - y - 1]
+                value = "-"
+
+                if node:
+                    if node["from"] == None:
+                        value = "s"
+                    elif node["blocked"]:
+                        value = "x"
+                    else:
+                        if node["from"]["x"] < node["x"]:
+                            value = "<"
+                        if node["from"]["x"] > node["x"]:
+                            value = ">"
+
+                        if node["from"]["y"] < node["y"]:
+                            value = "v"
+                        if node["from"]["y"] > node["y"]:
+                            value = "^"
+
+                line = line + value
+            output += line
+
+        print(output)
+
+        return
