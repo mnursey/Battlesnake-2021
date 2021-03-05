@@ -60,6 +60,13 @@ class Board:
 
         return output
 
+    def distance(self, a_cord, b_cord):
+
+        x_diff = a_cord["x"] - b_cord["x"]
+        y_diff = a_cord["y"] - b_cord["y"]
+
+        return abs(x_diff) + abs(y_diff)
+
     def print(self):
 
         output = "Grid:\n"
