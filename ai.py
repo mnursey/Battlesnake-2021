@@ -4,17 +4,33 @@ import random
 
 class SnakeAI:
 
-    objectives = [{"x" : 0, "y" : 0}, {"x" : 10, "y" : 10}]
-    objective_index = 0
-
     def __init__(self):
 
         return
 
-    def get_closest_food(self, data, game_board, flood_fill):
+    def get_closest_safe_food(self, data, game_board, head_fill, tail_fill):
 
         if len(data["board"]["food"]) != 0:
-            closest_apple_index = 0
+            closest_apple_index = None
+            best_distance = 999
+
+            for i, f in enumerate(data["board"]["food"]):
+                h_path = head_fill.path(data["board"]["food"][i])
+                t_path = tail_fill.path(data["board"]["food"][i])
+
+                if len(h_path) < best_distance and len(h_path) > 1 and len(t_path) > 1:
+                    best_distance = len(h_path)
+                    closest_apple_index = i
+
+            return closest_apple_index
+        else:
+
+            return None
+
+    def get_closest_food(self, data, game_board):
+
+        if len(data["board"]["food"]) != 0:
+            closest_apple_index = None
             best_distance = 999
 
             for i, f in enumerate(data["board"]["food"]):
@@ -52,17 +68,17 @@ class SnakeAI:
 
         b = board.Board(data)
         f = floodfill_pathfinding.Floodfill(b, data["you"]["body"][0])
-        f.print()
-        target_food_index = self.get_closest_food(data, b, f)
+        f_tail = floodfill_pathfinding.Floodfill(b, data["you"]["body"][-1])
+        #f.print()
+
+        target_food_index = self.get_closest_safe_food(data, b, f, f_tail)
 
         if target_food_index != None:
+            print("FOOD")
             path = f.path(data["board"]["food"][target_food_index])
         else:
-            path = f.path(self.objectives[self.objective_index])
-
-        if len(path) == 1:
-            self.objective_index = (self.objective_index + 1) % len(self.objectives)
-            path = f.path(self.objectives[self.objective_index])
+            print("TAIL")
+            path = f.path(data["you"]["body"][-1])
 
         # Choose a random direction to move in
         #possible_moves = ["up", "down", "left", "right"]
@@ -76,7 +92,6 @@ class SnakeAI:
         if len(path) > 1:
 
             print(path)
-
 
             if path[1]["x"] < data["you"]["body"][0]["x"]:
                 move = "left"
