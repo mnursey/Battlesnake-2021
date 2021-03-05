@@ -10,7 +10,8 @@ import cherrypy
 """
 This is a insane Battlesnake server written in Python.
 """
-
+objectives = [{"x" : 0, "y" : 0}, {"x" : 10, "y" : 10}]
+objective_index = 0
 
 class Battlesnake(object):
     @cherrypy.expose
@@ -41,6 +42,7 @@ class Battlesnake(object):
     @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def move(self):
+        global objective_index
         # This function is called on every turn of a game. It's how your snake decides where to move.
         # Valid moves are "up", "down", "left", or "right".
         # TODO: Use the information in cherrypy.request.json to decide your next move.
@@ -51,10 +53,32 @@ class Battlesnake(object):
 
         f = floodfill_pathfinding.Floodfill(b, data["you"]["body"][0])
         f.print()
+        path = f.path(objectives[objective_index])
+
+        if len(path) == 1:
+            objective_index = (objective_index + 1) % len(objectives)
+            path = f.path(objectives[objective_index])
 
         # Choose a random direction to move in
         possible_moves = ["up", "down", "left", "right"]
         move = random.choice(possible_moves)
+
+        if len(path) > 1:
+
+            print(path)
+
+
+            if path[1]["x"] < data["you"]["body"][0]["x"]:
+                move = "left"
+            if path[1]["x"] > data["you"]["body"][0]["x"]:
+                move = "right"
+
+            if path[1]["y"] < data["you"]["body"][0]["y"]:
+                move = "down"
+            if path[1]["y"] > data["you"]["body"][0]["y"]:
+                move = "up"
+
+
 
         print(f"MOVE: {move}")
         return {"move": move}

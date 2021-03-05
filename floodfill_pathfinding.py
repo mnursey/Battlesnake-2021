@@ -14,7 +14,7 @@ class Floodfill:
         start_node = self.create_node(start_cord["x"], start_cord["y"], False, None)
         self.frontier_add(start_node)
         self.grid[start_cord['x']][start_cord['y']] = start_node
-        
+
         self.solve()
 
         return
@@ -33,6 +33,19 @@ class Floodfill:
                         self.frontier_add(unseen_node)
 
         return
+
+    def path(self, target_cord):
+
+        node = self.grid[target_cord['x']][target_cord['y']]
+
+        path = []
+
+        while node:
+            path.append({"x" : node["x"], "y" : node["y"]})
+            node = node["from"]
+
+        path.reverse()
+        return path
 
     def frontier_add(self, node):
         self.frontier.append(node)
